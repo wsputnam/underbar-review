@@ -449,10 +449,10 @@
          * You can avoid an entire class of bugs by writing functions
          * that don't mutate their inputs!
          */
-
+        
         expect(input).to.eql([1, 2, 3, 4, 5]);
       });
-
+      
       it('should invoke the iterator function with arguments (memo, item) in that order', function() {
         var memoInCallback, itemInCallback;
 
@@ -472,7 +472,7 @@
           // FILL_ME_IN
           // Add a line here that makes this test pass
           // for a working implementation of reduce
-          //orderTraversed.push(item); // ADDED BY US
+          orderTraversed.push(item); // ADDED BY US
           return memo;
         }, 10);
 
