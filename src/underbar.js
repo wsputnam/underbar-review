@@ -478,11 +478,62 @@
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var output = [];
+    var outerArr = [];
+    for (var i = 0; i < arguments.length; i++) {
+      var obj = {};
+      for (var j = 0; j < arguments[i].length; j++) {
+        obj[arguments[i][j]] = 1;
+      }
+      outerArr.push(obj);
+    }
+    var newObj = {};
+    for (var i = 0; i < outerArr.length; i++) {
+      for (var key in outerArr[i]) {
+        if (newObj[key] === undefined) {
+          newObj[key] = 1;
+        } else {
+          newObj[key]++;
+        }
+      }
+    }
+    for (var key in newObj) {
+      if (newObj[key] === arguments.length) {
+        output.push(key);
+      }
+    }
+
+    return output;
+
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var output = [];
+    var diffArr= [];
+    for (var i = 1; i < arguments.length; i++) {
+      for (var j = 0; j < arguments[i].length; j++) {
+        diffArr.push(arguments[i][j]);
+      }
+    }
+    var obj1 = {};
+    for (var i = 0; i < arguments[0].length; i++) {
+      // if each value is in diffArr
+      obj1[arguments[0][i]] = arguments[0][i];
+    }
+    var obj2 = {};
+    for (var i = 0; i < diffArr.length; i++) {
+      obj2[diffArr[i]] = diffArr[i];
+    }
+    for (var key in obj1) {
+      if (obj2[key] === undefined) {
+        output.push(obj1[key]);
+      }
+
+    }
+
+    return output;
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
