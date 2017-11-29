@@ -35,8 +35,10 @@
 
       it('runs the specified method on each item in the array, and returns a list of results', function() {
         var upperCasedStrings = _.invoke(['dog', 'cat'], 'toUpperCase');
+        var floorNumberArray = _.invoke(['dog', 'cat'], 'slice', 1);
 
         expect(upperCasedStrings).to.eql(['DOG', 'CAT']);
+        expect(floorNumberArray).to.eql(['og', 'at']);
       });
     });
 

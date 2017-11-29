@@ -174,18 +174,23 @@
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
     var result, i;
-    if (accumulator === undefined) {
-      accumulator = collection[0];
-      i = 1;
-    } else {
-      i = 0;
-    }
+    
     if (Array.isArray(collection)) {
+      if (accumulator === undefined) {
+        accumulator = collection[0];
+        i = 1;
+      } else {
+        i = 0;
+      }
       for (; i < collection.length; i++) {
         accumulator = iterator(accumulator, collection[i]);
       }
     } else if (typeof collection === 'object') {
       for (var key in collection) {
+        if (accumulator === undefined) {
+         accumulator = collection[Object.keys(collection)[0]]; 
+         continue;
+        }
         accumulator = iterator(accumulator, collection[key]);
       }
 
@@ -343,7 +348,9 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
-    
+     
+     var args = Array.prototype.slice.call(arguments, 2);
+     setTimeout(function() { func.apply(this, args)}, wait);
 
   
   };
@@ -353,13 +360,21 @@
    * ADVANCED COLLECTION OPERATIONS
    * ==============================
    */
-
+ 
   // Randomizes the order of an array's contents.
   //
   // TIP: This function's test suite will ask that you not modify the original
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var arr = array.slice();
+    var randIndex = Math.floor(Math.random() * array.length);
+    arr.forEach(function(item, index, array) {
+      var temp = array[randIndex];
+      arr[randIndex] = array[index];
+      arr[index] = temp;
+    });
+    return arr;
   };
 
 
@@ -374,6 +389,16 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    if(typeof functionOrKey === 'string') {
+      // convert to function
+      // add method to string prototype
+      return _.map(collection, function(item) {
+        return item[functionOrKey](args);
+      });
+    }
+    return _.map(collection, function(item, index) {
+      return functionOrKey.apply(item, args);
+    });
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -381,7 +406,33 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    if (collection.length === 1) {
+     return collection;
+    }
+    iterator = iterator !== undefined ? iterator : _.identity;
+    var left = _.sortBy(collection.slice(0, Math.floor(collection.length/2)), iterator);
+    var right = _.sortBy(collection.slice(Math.floor(collection.length/2)), iterator);
+    var result = merge(left, right, iterator);
+    return result;
   };
+  function merge(left, right, iterator) {
+    var result = [];
+    var i = 0, j = 0;
+    for (; i < left.length && j < right.length;) {
+      if (iterator(left[i]) <= iterator(right[j]) && iterator(left[i]) !== undefined) {
+        result.push(left[i++]);
+      } else {
+        result.push(right[j++]);
+      }
+    }
+    for (; i < left.length; i++) {
+      result.push(left[i]);
+    }
+    for (; j < right.length; j++) {
+      result.push(right[j]);
+    }
+    return result;
+  }
 
   // Zip together two or more arrays with elements of the same index
   // going together.

@@ -527,6 +527,21 @@
         expect(result).to.equal(0);
       });
 
+      it('should pass every value of an object into the iterator if a memo is passed in', function() {
+        var result = _.reduce({a:1,b:2,c:3}, function(memo, item) {
+          return memo + item;
+        }, 0);
+        expect(result).to.equal(6);
+      });
+      
+      it('should pass every value of an object into the iterator if no memo is passed in', function() {
+        var result = _.reduce({a:1,b:2,c:3}, function(memo, item) {
+          return memo + item;
+        });
+        expect(result).to.equal(6);
+      });
+
+
     });
   });
 
